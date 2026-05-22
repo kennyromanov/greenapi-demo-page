@@ -1,0 +1,66 @@
+
+/* Variables */
+
+:root {
+    --greenapi-small-gap: 1.15em;
+    --greenapi-gap: 3.04em;
+}
+
+
+/* Styles */
+
+.container {
+    max-width: 1280px;
+
+    #app {
+        display: flex;
+        gap: var(--greenapi-gap);
+        padding: var(--greenapi-small-gap);
+        box-sizing: border-box;
+
+        > * { width: 100%; }
+
+        .controls {
+            > * {
+                margin-top: var(--greenapi-gap);
+                margin-bottom: var(--greenapi-gap);
+            }
+
+            .controls_group {
+                > * {
+                    display: block;
+                    width: 100%;
+                    margin-top: var(--greenapi-small-gap);
+                    margin-bottom: var(--greenapi-small-gap);
+                }
+
+                input {
+                    margin: unset;
+                }
+            }
+        }
+
+        .output {
+            display: flex;
+            flex-direction: column;
+            margin-top: var(--greenapi-gap);
+            margin-bottom: var(--greenapi-gap);
+
+            textarea {
+                height: 100%;
+                margin: unset;
+                resize: none;
+            }
+        }
+    }
+}
+
+
+/* Media */
+
+@media (max-width: 575px) {
+    #app {
+        flex-direction: column;
+        gap: unset;  /* FIXME */
+    }
+}

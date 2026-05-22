@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Green-API Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="/assets/main.css">
+    <script type="module" src="/assets/main.js" defer></script>
+</head>
+<body>
+
+<div class="container">
+    <main id="app">
+        <aside class="controls">
+            <div class="controls_group">
+                <label>
+                    <input type="text" name="id_instance_input" placeholder="idInstance">
+                </label>
+
+                <label>
+                    <input type="text" name="api_token_instance_input" placeholder="apiTokenInstance">
+                </label>
+            </div>
+
+            <div class="controls_group">
+                <button onclick="">
+                    getSession
+                </button>
+
+                <button onclick="">
+                    getSessionInstance
+                </button>
+            </div>
+
+            <div class="controls_group">
+                <label>
+                    <input
+                            type="tel"
+                            name="mesage_phone_number_input"
+                            placeholder="77771234567"
+                            maxlength="14"
+                    >
+                </label>
+
+                <label>
+                    <input
+                            type="text"
+                            name="mesage_text_input"
+                            placeholder="Hello World!"
+                            maxlength="20000"
+                    >
+                </label>
+
+                <button>
+                    sendMessage
+                </button>
+            </div>
+
+            <div class="controls_group">
+                <label>
+                    <input
+                            type="tel"
+                            name="file_phone_number_input"
+                            placeholder="77771234567"
+                            maxlength="14"
+                    >
+                </label>
+
+                <label>
+                    <input
+                            type="text"
+                            name="file_url_input"
+                            placeholder="https://mysite.com/img/horse.png"
+                            maxlength="4096"
+                    >
+                </label>
+
+                <button>
+                    sendFileByUrl
+                </button>
+            </div>
+        </aside>
+
+        <section class="output">
+            <h3>Ответ:</h3>
+            <textarea name="response" readonly></textarea>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>
