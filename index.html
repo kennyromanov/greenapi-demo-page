@@ -3,34 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Green-API Demo</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex, nofollow">
+    <meta id="viewport" content="width=device-width, initial-scale=1">
+    <meta id="robots" content="noindex, nofollow">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <link rel="stylesheet" href="/assets/main.css">
-    <script type="module" src="/assets/main.js" defer></script>
+    <link rel="stylesheet" href="./assets/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@green-api/whatsapp-api-client/lib/whatsapp-api-client.min.js"></script>
+    <script type="module" src="./assets/main.js"></script>
 </head>
 <body>
 
 <div class="container">
-    <main id="app">
+    <main id="app" data-loading="0">
         <aside class="controls">
             <div class="controls_group">
                 <label>
-                    <input type="text" name="id_instance_input" placeholder="idInstance">
+                    <input type="text" id="id_instance_input" placeholder="idInstance">
                 </label>
 
                 <label>
-                    <input type="text" name="api_token_instance_input" placeholder="apiTokenInstance">
+                    <input type="text" id="api_token_instance_input" placeholder="apiTokenInstance">
                 </label>
             </div>
 
             <div class="controls_group">
-                <button onclick="">
-                    getSession
+                <button id="get_settings_button">
+                    getSettings
                 </button>
 
-                <button onclick="">
-                    getSessionInstance
+                <button id="get_state_instance_button">
+                    getStateInstance
                 </button>
             </div>
 
@@ -38,7 +40,7 @@
                 <label>
                     <input
                             type="tel"
-                            name="mesage_phone_number_input"
+                            id="message_phone_number_input"
                             placeholder="77771234567"
                             maxlength="14"
                     >
@@ -47,13 +49,13 @@
                 <label>
                     <input
                             type="text"
-                            name="mesage_text_input"
+                            id="message_text_input"
                             placeholder="Hello World!"
                             maxlength="20000"
                     >
                 </label>
 
-                <button>
+                <button id="send_message_button">
                     sendMessage
                 </button>
             </div>
@@ -62,7 +64,7 @@
                 <label>
                     <input
                             type="tel"
-                            name="file_phone_number_input"
+                            id="file_phone_number_input"
                             placeholder="77771234567"
                             maxlength="14"
                     >
@@ -71,13 +73,13 @@
                 <label>
                     <input
                             type="text"
-                            name="file_url_input"
+                            id="file_url_input"
                             placeholder="https://mysite.com/img/horse.png"
                             maxlength="4096"
                     >
                 </label>
 
-                <button>
+                <button id="send_file_by_url_button">
                     sendFileByUrl
                 </button>
             </div>
@@ -85,7 +87,7 @@
 
         <section class="output">
             <h3>Ответ:</h3>
-            <textarea name="response" readonly></textarea>
+            <textarea id="response" readonly></textarea>
         </section>
     </main>
 </div>

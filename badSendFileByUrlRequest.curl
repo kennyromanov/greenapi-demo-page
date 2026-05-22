@@ -1,0 +1,16 @@
+curl 'https://api.green-api.com/waInstance7107629086/sendFileByUrl/0d704d685cb44148bda23e38be2404a3984ff6ca17734f73a4' \
+    -X 'POST' \
+    -H 'Content-Type: application/json' \
+    -H 'Accept: application/json, text/plain, */*' \
+    -H 'Sec-Fetch-Site: cross-site' \
+    -H 'Accept-Language: en-GB,en-US;q=0.9,en;q=0.8' \
+    -H 'Accept-Encoding: gzip, deflate, br, zstd' \
+    -H 'Sec-Fetch-Mode: cors' \
+    -H 'Origin: http://localhost:63342' \
+    -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.4 Safari/605.1.15' \
+    -H 'Referer: http://localhost:63342/' \
+    -H 'Content-Length: 166' \
+    -H 'Connection: keep-alive' \
+    -H 'Sec-Fetch-Dest: empty' \
+    -H 'Priority: u=3, i' \
+    --data-raw '{"urlFile":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS0IQhVr9DDJCq61QX28zCoiqDrvezBh5ylw&s","fileName":"unknown","phoneNumber":77054240457}'

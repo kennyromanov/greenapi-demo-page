@@ -2,8 +2,8 @@
 /* Variables */
 
 :root {
-    --greenapi-small-gap: 1.15em;
-    --greenapi-gap: 3.04em;
+    --greenapi-small-gap: calc(1em * 24 / 21);
+    --greenapi-gap: calc(1em * 64 / 21);
 }
 
 
@@ -15,8 +15,21 @@
     #app {
         display: flex;
         gap: var(--greenapi-gap);
-        padding: var(--greenapi-small-gap);
+        padding: 0 var(--greenapi-small-gap);
         box-sizing: border-box;
+
+        &[data-loading="1"] {
+            .controls {
+                pointer-events: none;
+
+                .controls_group {
+                    button {
+                        border-color: gray;
+                        background: gray;
+                    }
+                }
+            }
+        }
 
         > * { width: 100%; }
 
@@ -48,6 +61,7 @@
 
             textarea {
                 height: 100%;
+                min-height: 40vh;
                 margin: unset;
                 resize: none;
             }
@@ -59,8 +73,9 @@
 /* Media */
 
 @media (max-width: 575px) {
-    #app {
+    .container #app {
         flex-direction: column;
-        gap: unset;  /* FIXME */
+        gap: 0;
+        padding: unset;
     }
 }
