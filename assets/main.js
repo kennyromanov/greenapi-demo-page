@@ -82,12 +82,14 @@ export function setLoading(val = true) {
 export function setResponse(val) {
     if (typeof val === 'object' && val !== null)
         responseEl.value = JSON.stringify(val, null, 2);
+    else if (val === undefined || val === null)
+        responseEl.value = '';
     else
         responseEl.value = val;
 }
 
 export function remResponse() {
-    responseEl.value = '';
+    setResponse('');
 }
 
 export function getIdInstance() {

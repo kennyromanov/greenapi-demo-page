@@ -31,7 +31,7 @@ export async function sendMessage({ chatId, phone, message, quotedMessageId, doS
         throw new ApiRequestNoParamError(null, 'message');
 
 
-    await greenapiApi.message.sendMessage(chatId, Number(phone), message, quotedMessageId, !!doShowLinksPreview);
+    return await greenapiApi.message.sendMessage(chatId, Number(phone), message, quotedMessageId, !!doShowLinksPreview);
 }
 
 /**
@@ -62,7 +62,7 @@ export async function sendFileByUrl({ chatId, phone, fileUrl, fileName, caption 
         throw new ApiRequestNoParamError(null, 'fileName');
 
 
-    await greenapiApi.file.sendFileByUrl(chatId, Number(phone), fileUrl, fileName, caption || '');
+    return await greenapiApi.file.sendFileByUrl(chatId, Number(phone), fileUrl, fileName, caption || '');
 }
 
 export function init(idInstance, apiTokenInstance) {
