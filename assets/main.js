@@ -1,12 +1,14 @@
-import { init as initApi, getSettings, getStateInstance, getChats, sendMessage, sendFileByUrl } from './api.js';
+import { init as initApi, isValidUrl, getTrimmedString, getSettings, getStateInstance, getChats, sendMessage, sendFileByUrl } from './api.js';
 import { FieldDataError, FieldNoDataError } from './errors.js';
 
 
 // Constants
 
-export const PHONE_MIN_LENGTH = 5;
+export const DEFAULT_CHAT_ID_POSTFIX = '@c.us';
 
 export const DEFAULT_FILENAME = 'unknown';
+
+export const PHONE_MIN_LENGTH = 5;
 
 
 // Variables
@@ -106,6 +108,46 @@ export function getApiTokenInstance() {
         throw new FieldNoDataError(null, 'apiTokenInstance');
 }
 
+export async function getChatByPhoneNumber(val) {
+
+    // Getting the chats
+
+    const chats = await getChats();
+
+
+    // Iterating for each chat
+
+    for (const chat of chats) {
+        const chatId = chat.id ?? null;
+
+
+        // Doing some checks
+
+        if (!chatId) {
+            warn('Unable to get the chat: Bad data: ' + JSON.stringify(chat));
+            continue;
+        }
+
+        if (!chatId.startsWith(val) || !chatId.endsWith(DEFAULT_CHAT_ID_POSTFIX))
+            continue;
+
+
+        return chat;
+    }
+
+
+    return null;
+}
+
+export async function getChatIdByPhoneNumber(val) {
+    const chat = await getChatByPhoneNumber(val);
+
+    if (chat)
+        return chat.id ?? null;
+    else
+        return null;
+} {}
+
 export function updGreenapi() {
     initApi(getIdInstance(), getApiTokenInstance());
 }
@@ -172,21 +214,27 @@ export async function onSendMessage() {
 
     // Getting the data
 
-    const phone = messagePhoneNumberInputEl.value;
+    const phone = getTrimmedString(messagePhoneNumberInputEl.value);
 
-    const message = messageTextInputEl.value;
+    const message = getTrimmedString(messageTextInputEl.value);
 
 
     // Doing some checks
 
-    if (!phone)
-        throw new FieldNoDataError(null, 'filePhoneNumber');
+    if (!phone) {
+        onError(new FieldNoDataError(null, 'filePhoneNumber'));
+        return;
+    }
 
-    if (!message)
-        throw new FieldNoDataError(null, 'messageText');
+    if (!message) {
+        onError(new FieldNoDataError(null, 'messageText'));
+        return;
+    }
 
-    if (phone.length < PHONE_MIN_LENGTH)
-        throw new FieldDataError(`Телефон не может быть короче ${PHONE_MIN_LENGTH} символов!`, 'filePhoneNumber');
+    if (phone.length < PHONE_MIN_LENGTH) {
+        onError(new FieldDataError(`Телефон не может быть короче ${PHONE_MIN_LENGTH} символов!`, 'filePhoneNumber'));
+        return;
+    }
 
 
 
@@ -196,8 +244,23 @@ export async function onSendMessage() {
     remResponse();
 
     try {
+
+        // Updating the data
+
         updGreenapi();
-        setResponse(await sendMessage({ phone, message }));
+
+
+        // Getting the chatId
+
+        let chatId = await getChatIdByPhoneNumber(phone);
+
+        if (!chatId) {
+            console.log(`API: The chat with the phone number '${phone}' was not found: Falling back to '${phone + DEFAULT_CHAT_ID_POSTFIX}'`);
+            chatId = phone + DEFAULT_CHAT_ID_POSTFIX;
+        }
+
+
+        setResponse(await sendMessage({ chatId, message }));
     } catch (e) {
         onError(e);
     } finally {
@@ -205,43 +268,43 @@ export async function onSendMessage() {
     }
 }
 
-/**
- * @fixme
- *   Я пытался отправлять запросы на `sendFileByUrl`, но **сервис падал при попытке отправить файл**. Я так понял, это
- *   сервис _неадекватно реагирует_ на `.` (точку) в отправляемых данных. Из-за этого не получается вставлять URL-ы.
- *   Пример запросов и овтетов я положил в проект: `badSendFileByUrlRequest.curl`, `badSendFileByUrlResponse`
- *
- * @returns {Promise<void>}
- */
 export async function onSendFileByUrl() {
 
     // Doing some checks
 
     if (isInProgress) {
-        warn('Unable to get the session: Another request is still in progress');
+        warn('Unable to send the file: Another request is still in progress');
         return;
     }
 
 
     // Getting the data
 
-    const phone = filePhoneNumberInputEl.value;
+    const phone = getTrimmedString(filePhoneNumberInputEl.value);
 
-    const fileUrl = fileUrlInputEl.value;
+    const fileUrl = getTrimmedString(fileUrlInputEl.value);
 
-    const fileName = DEFAULT_FILENAME;
+    const rawFileName = fileUrl.split('/').at(-1) || DEFAULT_FILENAME;
+
+    const fileName = getTrimmedString(rawFileName);
 
 
     // Doing some checks
 
-    if (!phone)
-        throw new FieldNoDataError(null, 'filePhoneNumber');
+    if (!phone) {
+        onError(new FieldNoDataError(null, 'filePhoneNumber'));
+        return;
+    }
 
-    if (!fileUrl)
-        throw new FieldNoDataError(null, 'fileUrl');
+    if (!fileUrl) {
+        onError(new FieldNoDataError(null, 'fileUrl'));
+        return;
+    }
 
-    if (phone.length < PHONE_MIN_LENGTH)
-        throw new FieldDataError(`Телефон не может быть короче ${PHONE_MIN_LENGTH} символов!`, 'filePhoneNumber');
+    if (!isValidUrl(fileUrl)) {
+        onError(new FieldDataError(`Некорректная ссылка на файл '${fileUrl}'!`, 'fileUrl'));
+        return;
+    }
 
 
     // Getting the session
@@ -250,8 +313,23 @@ export async function onSendFileByUrl() {
     remResponse();
 
     try {
+
+        // Updating the data
+
         updGreenapi();
-        setResponse(await sendFileByUrl({ phone, fileUrl, fileName }));
+
+
+        // Getting the chatId
+
+        let chatId = await getChatIdByPhoneNumber(phone);
+
+        if (!chatId) {
+            console.log(`API: The chat with the phone number '${phone}' was not found: Falling back to '${phone + DEFAULT_CHAT_ID_POSTFIX}'`);
+            chatId = phone + DEFAULT_CHAT_ID_POSTFIX;
+        }
+
+
+        setResponse(await sendFileByUrl({ chatId, fileUrl, fileName }));
     } catch (e) {
         onError(e);
     } finally {
@@ -259,7 +337,48 @@ export async function onSendFileByUrl() {
     }
 }
 
+export function onGreenapiApiError(e) {
+    const response = e.response ?? {};
+    const data = response.data ?? null;
+    const message = data?.message ?? null;
+
+
+    // Logging the error
+
+    err(e);
+
+
+    if (message)
+        alert(message);
+    else
+        alert('Неизвестная ошибка: ' + e.message || 'Unknown Error');
+}
+
+export function onAxiosError(e) {
+
+    // Guessing the error
+
+    const response = e.response ?? {};
+    const data = response.data ?? null;
+    const isGreenapiError = !!data?.message;
+
+
+    // If the error is known
+
+    if (isGreenapiError) {
+        onGreenapiApiError(e);
+        return;
+    }
+
+
+    err(e);
+
+    alert('Неизвестная ошибка: ' + e.message || 'Unknown Error')
+}
+
 export function onError(e) {
+    const { AxiosError } = axios;
+
 
     // Guessing the error
 
@@ -267,23 +386,30 @@ export function onError(e) {
 
     const isDataError = e instanceof FieldDataError;
 
+    const isAxiosError = e instanceof AxiosError;
+
 
     // If the error is known
 
     if (isNoData) {
-        alert(`Поле '${e.field ?? '?'} не заполнено!`);
+        alert(`Поле '${e.field || '?'} не заполнено!`);
         return;
     }
 
     if (isDataError) {
-        alert(e.message ?? `Поле '${e.field ?? '?'} некорректно!`);
+        alert(e.message ?? `Поле '${e.field || '?'} некорректно!`);
+        return;
+    }
+
+    if (isAxiosError) {
+        onAxiosError(e);
         return;
     }
 
 
     err(e);
 
-    alert('Неизвестная ошибка: ' + e.message ?? 'Unknown Error')
+    alert('Неизвестная ошибка: ' + e.message || 'Unknown Error')
 }
 
 export function useEvents() {

@@ -6,7 +6,7 @@ The project followed the instructions from the PDF file I was given during the r
 
 ## Quick Start
 
-Open the page by right-clicking the [index.html](index.html) --> _"Open With"_ --> _"Chrome"_.
+Open the page by right-clicking the `index.html` --> _"Open With"_ --> _"Chrome"_.
 
 ## Stack
 
@@ -24,9 +24,11 @@ Open the page by right-clicking the [index.html](index.html) --> _"Open With"_ -
   - `errors.js`: the error helper
   - `api.js`: the API layer
 
-## Extras
+## Additional
 
-During the progress I discovered that the `sendFileByUrl` method **did not work properly**. As I found out, the service did not respond properly to `.` (dots), which made impossible working with this specific endpoint. I marked that out in code and have saved the requests and responses from the server for further investigation: `/badSendFileByUrlRequest.curl`, `/badSendFileByUrlResponse1`, `/badSendFileByUrlResponse2.json`.   
+I found out that the parameter `phoneNumber` of _whatsapp-api-client-js_ is no longer supported, and its modern replacement is `chatId`. However, according to the manual **It is not so clear**, that `phoneNumber` should not be used. [I added deprecations directly to the library](https://github.com/green-api/whatsapp-api-client-js/pull/152), to make the library users know about these changes.
+
+[!152](https://github.com/green-api/whatsapp-api-client-js/pull/152)
 
 ---
 Kenny R.

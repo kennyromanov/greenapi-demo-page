@@ -1,4 +1,4 @@
-import { ApiRequestNoParamError } from './errors.js';
+import {ApiRequestNoParamError, ApiRequestParamDataError} from './errors.js';
 
 
 // Third-parties
@@ -6,7 +6,21 @@ import { ApiRequestNoParamError } from './errors.js';
 export let greenapiApi = null;
 
 
+// Constants
+
+export const DEFAULT_CAPTION = '';
+
+
 // Functions
+
+export function isValidUrl(val) {
+    try { new URL(val); return true; }
+    catch (e) { return false; }
+}
+
+export function getTrimmedString(val) {
+    return String(val || '').trim();
+}
 
 export async function getSettings() {
     return await greenapiApi.settings.getSettings();
@@ -20,49 +34,58 @@ export async function getChats() {
     return await greenapiApi.instance.getChats();
 }
 
-export async function sendMessage({ chatId, phone, message, quotedMessageId, doShowLinksPreview }) {
+export async function sendMessage({ chatId, message, quotedMessageId, doShowLinksPreview }) {
 
     // Doing some checks
 
-    if (!chatId && !phone)
+    if (!getTrimmedString(chatId))
         throw new ApiRequestNoParamError(null, 'chatId');
 
-    if (!message)
+    if (!getTrimmedString(message))
         throw new ApiRequestNoParamError(null, 'message');
 
 
-    return await greenapiApi.message.sendMessage(chatId, Number(phone), message, quotedMessageId, !!doShowLinksPreview);
+    return await greenapiApi.message.sendMessage(
+        getTrimmedString(chatId),
+        null,  // NOTE: The phone number parameter has been deprecated
+        getTrimmedString(message),
+        quotedMessageId,
+        !!doShowLinksPreview,
+    );
 }
 
-/**
- * @fixme
- *   Я пытался отправлять запросы на `sendFileByUrl`, но **сервис падал при попытке отправить файл**. Я так понял, это
- *   сервис _неадекватно реагирует_ на `.` (точку) в отправляемых данных. Из-за этого не получается вставлять URL-ы.
- *   Пример запросов и овтетов я положил в проект: `badSendFileByUrlRequest.curl`, `badSendFileByUrlResponse`
- *
- * @param options
- * @param options.chatId
- * @param options.phone
- * @param options.fileUrl
- * @param options.fileName
- * @param options.caption
- * @returns {Promise<void>}
- */
-export async function sendFileByUrl({ chatId, phone, fileUrl, fileName, caption }) {
+export async function sendFileByUrl({ chatId, fileUrl, fileName, caption }) {
 
     // Doing some checks
 
-    if (!chatId && !phone)
+    if (!getTrimmedString(chatId))
         throw new ApiRequestNoParamError(null, 'chatId');
 
-    if (!fileUrl)
+    if (!getTrimmedString(fileUrl))
         throw new ApiRequestNoParamError(null, 'fileUrl');
 
-    if (!fileName)
+    if (!getTrimmedString(fileName))
         throw new ApiRequestNoParamError(null, 'fileName');
 
+    if (!isValidUrl(getTrimmedString(fileUrl)))
+        throw new ApiRequestParamDataError(null, 'fileUrl');
 
-    return await greenapiApi.file.sendFileByUrl(chatId, Number(phone), fileUrl, fileName, caption || '');
+
+    // Getting the caption
+
+    let trimmedCaption = DEFAULT_CAPTION;
+
+    if (getTrimmedString(caption))
+        trimmedCaption = getTrimmedString(caption);
+
+
+    return await greenapiApi.file.sendFileByUrl(
+        String(chatId.trim()),
+        null,  // NOTE: The phone number parameter has been deprecated
+        String(fileUrl.trim()),
+        String(fileName.trim()),
+        trimmedCaption,
+    );
 }
 
 export function init(idInstance, apiTokenInstance) {
