@@ -1,5 +1,5 @@
-import { init as initApi, isValidUrl, getTrimmedString, getSettings, getStateInstance, getChats, sendMessage, sendFileByUrl } from './api.js';
-import { FieldDataError, FieldNoDataError } from './errors.js';
+import { init as initApi, isValidUrl, getTrimmedString, getSettings, getStateInstance, getChats, sendMessage, sendFileByUrl } from './api.js?v=2026-05-25-1';
+import { FieldDataError, FieldNoDataError } from './errors.js?v=2026-05-25-1';
 
 
 // Constants
